@@ -95,6 +95,10 @@ textarea {
 .button-clean:hover {
     color: rgb(115, 166, 253);
 }
+.helper{
+    color: rgb(167, 167, 167);
+    margin-top: 10px;    
+}
 
 @keyframes rainbow {
     0% {

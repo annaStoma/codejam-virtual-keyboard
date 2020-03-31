@@ -23,13 +23,17 @@ class Keyboard {
         this.WRAPPER.appendChild(this.TEXTAREA);
         this.WRAPPER.appendChild(this.KEYBOARD);
         this.BUTTON = document.createElement('button');
-        this.BUTTON.innerText = 'Очистить ввод';
+        this.BUTTON.innerText = 'Сlear input field';
         this.BUTTON.classList.add('button-clean');
         this.WRAPPER.appendChild(this.BUTTON);
         this.BUTTON = document.querySelector('button');
         this.BUTTON.addEventListener('click', () => {
             this.TEXTAREA.innerText = '';
-        })
+        });
+        this.HELPER = document.createElement('div');
+        this.HELPER.innerText = 'Ctrl + alt - change language';
+        this.HELPER.classList.add('helper');
+        this.WRAPPER.appendChild(this.HELPER);
     }
 
     changeCaseLayout(keyValue, index, isEng, isCapsLock, isShift) {
