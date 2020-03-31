@@ -34,7 +34,7 @@ textarea {
     /* background: linear-gradient(to right, red, orange, yellow, rgb(55, 233, 55), rgb(118, 209, 255), blue, rgb(250, 74, 250)); */
     background: radial-gradient(circle, rgba(63, 94, 251, 1) 0%, rgba(252, 70, 107, 1) 100%);
     background-size: 300% 300%;
-    animation: rainbow 20s ease infinite;
+    animation: rainbow 15s ease infinite;
 }
 
 .key {
@@ -52,16 +52,12 @@ textarea {
 
 .key:hover {
     cursor: pointer;
-    box-shadow: inset 0px 0px 0px 2px rgb(255, 255, 255, 0.4);
-    box-sizing: border-box;
-    /* background-color: violet; */
+    background-color: rgba(193, 193, 193, 0.6);
 }
 
-
 .control-key-background {
-    background-color: rgba(194, 194, 194, 0.4);
+    background-color: rgba(164, 164, 164, 0.4);
     font-size: 1em;
-    ;
 }
 
 .backspace-key {
@@ -70,22 +66,36 @@ textarea {
 
 .long-control-key {
     width: 89px;
-    /* padding: 0px 8px; */
-    background-color: ;
-}
-
-.short-control-key {
-    /* width: 45px; */
-    /* padding: 0px 2px; */
 }
 
 .active {
-    background-color: rgba(255, 255, 255, 0.6);
-    /* background-color: rgb(226, 36, 36); */
+    background-color: rgba(193, 193, 193, 0.6);
+    border-radius: 20px;
 }
-.uppercase{
+
+.active-shift {
+    background-color: rgb(35, 145, 255);
+    border-radius: 20px;
+}
+
+.button-clean {
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: rgb(235, 235, 235);
+    color: rgb(167, 167, 167);
+    font-size: 20px;
     text-transform: uppercase;
+    cursor: pointer;
+    outline: none;
 }
+
+.button-clean:hover {
+    color: rgb(115, 166, 253);
+}
+
 @keyframes rainbow {
     0% {
         background-position: 0% 50%
