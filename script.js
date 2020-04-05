@@ -49,6 +49,8 @@ class Keyboard {
     }
 
     addKeysOnKeyboard() {
+
+
         this.KEYBOARD.querySelectorAll('span').forEach(item => {
             item.remove();
         })
@@ -114,12 +116,19 @@ class Keyboard {
             else if (event.code === 'ShiftRight') shifRight.classList.add('active-shift');
         }
         this.CAPSLOCK = document.getElementById('67');
+
+        if (this.isCapsLock)
+            this.CAPSLOCK.classList.add('active-shift');
+        else this.CAPSLOCK.classList.remove('active-shift');
+
     }
 
     keyUpHendler(event) {
         event.preventDefault();
         document.querySelectorAll('.key').forEach(item => {
-            item.classList.remove('active');
+            let item_data = item.getAttribute('datacode');
+            if (item_data == event.code)
+                item.classList.remove('active');
         });
         if ((event.code === 'AltLeft' && event.ctrlKey) || (event.altKey && event.code === 'ControlLeft')) {
             this.isEng = !this.isEng;
@@ -139,7 +148,19 @@ class Keyboard {
         }
     }
 
+    deleteSymbol() {
+        let start = this.TEXTAREA.selectionStart,
+            end = this.TEXTAREA.selectionEnd;
+        if (!this.TEXTAREA.setRangeText) { return; }
+        if (start >= end) {
+            if (start <= 0 || !this.TEXTAREA.setSelectionRange) { return; }
+            this.TEXTAREA.setSelectionRange(start - 1, start);
+        }
+        this.TEXTAREA.setRangeText("");
+    }
+
     keyDownHendler(event) {
+        let elm = document.querySelector('textarea');
         event.preventDefault();
         if (!document.querySelector('span.key[datacode="' + event.code + '"]'))
             return;
@@ -149,17 +170,51 @@ class Keyboard {
         let index = this.KEY_WHICH.indexOf(event.which);
         text = this.changeCaseLayout(text, index, this.isEng, this.isCapsLock, this.isShift);
 
-        if (event.key !== "Control" && event.key !== 'Alt' && event.key !== 'Shift' && event.code !== 'MetaLeft' && event.code !== 'Tab' && event.key !== "CapsLock" && event.key !== 'Backspace' && event.key !== 'Delete' && event.key !== 'Enter' && event.code !== 'Space') {
-            this.TEXTAREA.innerHTML += text;
+        if (event.key !== "Control" && event.key !== 'Alt' && event.key !== 'Shift' && event.code !== 'MetaLeft' && event.code !== 'Tab' && event.key !== "CapsLock" && event.key !== 'Backspace' && event.key !== 'Delete' && event.key !== 'Enter' && event.code !== 'Space' &&
+            event.code !== 'ArrowLeft' &&
+            event.code !== 'ArrowRight' &&
+            event.code !== 'ArrowUp' &&
+            event.code !== 'ArrowDown') {
+            this.TEXTAREA.setRangeText(text);
+            elm.focus();
         } else {
-            if (event.key === 'Enter') this.TEXTAREA.innerHTML += '\n';
-            if (event.key === 'Backspace') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
+            if (event.key === 'Enter')
+                this.TEXTAREA.setRangeText('\n');
+            if (event.key === 'Backspace') this.deleteSymbol();
             if (event.code === 'Space') this.TEXTAREA.innerHTML += ' ';
-            if (event.key === 'Delete') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
+            if (event.key === 'Delete') this.deleteSymbol();
             if (event.key === 'Tab') this.TEXTAREA.innerHTML += '    ';
             if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
                 this.isShift = true;
                 this.addKeysOnKeyboard();
+            }
+            if (
+                event.code == 'ArrowRight') {
+                elm.selectionStart += 1;
+                elm.focus();
+            }
+            if (event.code == 'ArrowLeft') {
+                let elm = document.querySelector('textarea');
+                elm.selectionEnd -= 1;
+                elm.focus();
+            }
+
+            if (event.code == 'ArrowDown') {
+
+                let pos = elm.selectionEnd,
+                    prevLine = elm.value.lastIndexOf('\n', pos),
+                    nextLine = elm.value.indexOf('\n', pos + 1);
+                if (nextLine === -1) return;
+                pos = pos - prevLine;
+                elm.selectionStart = elm.selectionEnd = nextLine + pos;
+            }
+            if (event.code == 'ArrowUp') {
+                let pos = elm.selectionEnd,
+                    prevLine = elm.value.lastIndexOf('\n', pos),
+                    TwoBLine = elm.value.lastIndexOf('\n', prevLine - 1);
+                if (prevLine === -1) return;
+                pos = pos - prevLine;
+                elm.selectionStart = elm.selectionEnd = TwoBLine + pos;
             }
         }
     }
@@ -175,7 +230,7 @@ class Keyboard {
                 item.classList.add('active');
                 let item_data = item.getAttribute('datacode');
                 if (item_data !== "ControlRight" && item_data !== "ControlLeft" && item_data !== 'AltRight' && item_data !== 'AltLeft' && item_data !== 'ShiftLeft' && item_data !== 'ShiftRight' && item_data !== 'MetaLeft' && item_data !== 'Tab' && item_data !== "CapsLock" && item_data !== 'Backspace' && item_data !== 'Delete' && item_data !== 'Enter' && item_data !== 'Space') {
-                    this.TEXTAREA.innerHTML += item.innerText;
+                    this.TEXTAREA.setRangeText(item.innerText);
                 } else {
                     if (item_data === 'Enter') this.TEXTAREA.innerHTML += '\n';
                     if (item_data === 'Backspace') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
@@ -208,6 +263,8 @@ class Keyboard {
             } else CAPSLOCK.classList.remove('active-shift');
         })
     }
+
+
 }
 window.onload = () => {
     const keyboard = new Keyboard();
