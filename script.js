@@ -31,7 +31,7 @@ class Keyboard {
             this.TEXTAREA.value = '';
         });
         this.HELPER = document.createElement('div');
-        this.HELPER.innerText = 'Ctrl + alt - change language';
+        this.HELPER.innerHTML = '<div>Ctrl + alt - change language</div><div>WINDOWS OS</div>';
         this.HELPER.classList.add('helper');
         this.WRAPPER.appendChild(this.HELPER);
     }
