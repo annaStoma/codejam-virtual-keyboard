@@ -145,13 +145,15 @@ class Keyboard {
         }
     }
 
-    deleteSymbol() {
+    deleteSymbol(item_data) {
         let start = this.TEXTAREA.selectionStart,
             end = this.TEXTAREA.selectionEnd;
         if (!this.TEXTAREA.setRangeText) { return; }
         if (start >= end) {
             if (start <= 0 || !this.TEXTAREA.setSelectionRange) { return; }
-            this.TEXTAREA.setSelectionRange(start - 1, start);
+            if (event.key == 'Backspace' || item_data == "Backspace")
+                this.TEXTAREA.setSelectionRange(start - 1, start);
+            else this.TEXTAREA.setSelectionRange(start, start + 1);
         }
         this.TEXTAREA.setRangeText("");
         this.TEXTAREA.focus();
@@ -201,7 +203,6 @@ class Keyboard {
         let position = textarea.selectionEnd,
             upLine = textarea.value.lastIndexOf('\n', position),
             downLine = textarea.value.lastIndexOf('\n', upLine - 1);
-        if (upLine === -1) return;
         position = position - upLine;
         textarea.selectionStart = textarea.selectionEnd = downLine + position;
     }
@@ -211,7 +212,6 @@ class Keyboard {
         let position = textarea.selectionEnd,
             upLine = textarea.value.lastIndexOf('\n', position),
             downLine = textarea.value.indexOf('\n', position + 1);
-        if (downLine === -1) return;
         position = position - upLine;
         textarea.selectionStart = textarea.selectionEnd = downLine + position;
     }
@@ -227,8 +227,8 @@ class Keyboard {
         textarea.selectionStart += 1;
         textarea.focus();
     }
-    addListenersOnKeys() {
 
+    addListenersOnKeys() {
         document.addEventListener('keydown', (event) => this.keyDownHendler(event));
         document.addEventListener('keyup', (event) => this.keyUpHendler(event));
         document.addEventListener('mousedown', (e) => {
@@ -243,9 +243,9 @@ class Keyboard {
                     this.setSelectionRange(item.innerText);
                 else {
                     if (item_data === 'Enter') this.setSelectionRange('\n');
-                    if (item_data === 'Backspace') this.deleteSymbol();
+                    if (item_data === 'Backspace') this.deleteSymbol(item_data);
                     if (item_data === 'Space') this.setSelectionRange(' ');
-                    if (item_data === 'Delete') this.deleteSymbol();
+                    if (item_data === 'Delete') this.deleteSymbol(item_data);
                     if (item_data === 'Tab') this.setSelectionRange('    ');
                     if (item_data == 'ShiftLeft' || item_data == 'ShiftRight') {
                         this.isShift = !this.isShift;
@@ -257,10 +257,7 @@ class Keyboard {
                     }
                     if (item_data == 'ArrowRight') this.moveRightCaret();
                     if (item_data == 'ArrowLeft') this.moveLeftCaret();
-                    if (item_data == 'ArrowUp') {
-                        this.moveUpCaret();
-                        console.log('dd')
-                    }
+                    if (item_data == 'ArrowUp') this.moveUpCaret();
                     if (item_data == 'ArrowDown') this.moveDownCaret();
                 }
             }
