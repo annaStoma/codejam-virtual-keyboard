@@ -181,7 +181,7 @@ class Keyboard {
             if (event.key === 'Enter')
                 this.TEXTAREA.setRangeText('\n');
             if (event.key === 'Backspace') this.deleteSymbol();
-            if (event.code === 'Space') this.TEXTAREA.innerHTML += ' ';
+            if (event.code === 'Space') this.TEXTAREA.value += ' ';
             if (event.key === 'Delete') this.deleteSymbol();
             if (event.key === 'Tab') this.TEXTAREA.innerHTML += '    ';
             if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
@@ -231,10 +231,11 @@ class Keyboard {
                 let item_data = item.getAttribute('datacode');
                 if (item_data !== "ControlRight" && item_data !== "ControlLeft" && item_data !== 'AltRight' && item_data !== 'AltLeft' && item_data !== 'ShiftLeft' && item_data !== 'ShiftRight' && item_data !== 'MetaLeft' && item_data !== 'Tab' && item_data !== "CapsLock" && item_data !== 'Backspace' && item_data !== 'Delete' && item_data !== 'Enter' && item_data !== 'Space') {
                     this.TEXTAREA.setRangeText(item.innerText);
+                    this.TEXTAREA.setSelectionRange(0,this.TEXTAREA.value.length)
                 } else {
                     if (item_data === 'Enter') this.TEXTAREA.innerHTML += '\n';
                     if (item_data === 'Backspace') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
-                    if (item_data === 'Space') this.TEXTAREA.innerHTML += ' ';
+                    if (item_data === 'Space') this.TEXTAREA.value += ' ';
                     if (item_data === 'Delete') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
                     if (item_data === 'Tab') this.TEXTAREA.innerHTML += '    ';
                     if (item_data == 'ShiftLeft' || item_data == 'ShiftRight') {
@@ -272,8 +273,3 @@ window.onload = () => {
     keyboard.createDOM();
     keyboard.addKeysOnKeyboard();
 };
-
-// let cursorPosition = INPUT.selectionStart;
-// const cursorPositionEnd = INPUT.selectionEnd;
-// вот эти два свойства отвечают за курсор и выделение, с ними можно играться
-// удалить блок текста - можно достаточно просто)
