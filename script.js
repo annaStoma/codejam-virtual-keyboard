@@ -28,7 +28,7 @@ class Keyboard {
         this.WRAPPER.appendChild(this.BUTTON);
         this.BUTTON = document.querySelector('button');
         this.BUTTON.addEventListener('click', () => {
-            this.TEXTAREA.innerText = '';
+            this.TEXTAREA.value = '';
         });
         this.HELPER = document.createElement('div');
         this.HELPER.innerText = 'Ctrl + alt - change language';
@@ -49,12 +49,9 @@ class Keyboard {
     }
 
     addKeysOnKeyboard() {
-
-
         this.KEYBOARD.querySelectorAll('span').forEach(item => {
             item.remove();
         })
-
         this.KEY_WHICH.forEach((key, index) => {
             let keyValue = '';
             keyValue = this.changeCaseLayout(keyValue, index, this.isEng, this.isCapsLock, this.isShift);
@@ -157,10 +154,16 @@ class Keyboard {
             this.TEXTAREA.setSelectionRange(start - 1, start);
         }
         this.TEXTAREA.setRangeText("");
+        this.TEXTAREA.focus();
+    }
+
+    setSelectionRange(text) {
+        this.TEXTAREA.focus();
+        this.TEXTAREA.setRangeText(text, this.TEXTAREA.selectionStart, this.TEXTAREA.selectionEnd, 'end');
+
     }
 
     keyDownHendler(event) {
-        let elm = document.querySelector('textarea');
         event.preventDefault();
         if (!document.querySelector('span.key[datacode="' + event.code + '"]'))
             return;
@@ -175,83 +178,90 @@ class Keyboard {
             event.code !== 'ArrowRight' &&
             event.code !== 'ArrowUp' &&
             event.code !== 'ArrowDown') {
-            this.TEXTAREA.setRangeText(text);
-            elm.focus();
+            this.setSelectionRange(text);
         } else {
-            if (event.key === 'Enter')
-                this.TEXTAREA.setRangeText('\n');
+            if (event.key === 'Enter') this.setSelectionRange('\n');
             if (event.key === 'Backspace') this.deleteSymbol();
             if (event.code === 'Space') this.TEXTAREA.value += ' ';
             if (event.key === 'Delete') this.deleteSymbol();
-            if (event.key === 'Tab') this.TEXTAREA.innerHTML += '    ';
+            if (event.key === 'Tab') this.TEXTAREA.value += '    ';
             if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
                 this.isShift = true;
                 this.addKeysOnKeyboard();
             }
-            if (
-                event.code == 'ArrowRight') {
-                elm.selectionStart += 1;
-                elm.focus();
-            }
-            if (event.code == 'ArrowLeft') {
-                let elm = document.querySelector('textarea');
-                elm.selectionEnd -= 1;
-                elm.focus();
-            }
-
-            if (event.code == 'ArrowDown') {
-
-                let pos = elm.selectionEnd,
-                    prevLine = elm.value.lastIndexOf('\n', pos),
-                    nextLine = elm.value.indexOf('\n', pos + 1);
-                if (nextLine === -1) return;
-                pos = pos - prevLine;
-                elm.selectionStart = elm.selectionEnd = nextLine + pos;
-            }
-            if (event.code == 'ArrowUp') {
-                let pos = elm.selectionEnd,
-                    prevLine = elm.value.lastIndexOf('\n', pos),
-                    TwoBLine = elm.value.lastIndexOf('\n', prevLine - 1);
-                if (prevLine === -1) return;
-                pos = pos - prevLine;
-                elm.selectionStart = elm.selectionEnd = TwoBLine + pos;
-            }
+            if (event.code == 'ArrowRight') this.moveRightCaret();
+            if (event.code == 'ArrowLeft') this.moveLeftCaret();
+            if (event.code == 'ArrowDown') this.moveDownCaret();
+            if (event.code == 'ArrowUp') this.moveUpCaret();
         }
     }
 
+    moveUpCaret() {
+        let textarea = document.querySelector('textarea');
+        let position = textarea.selectionEnd,
+            upLine = textarea.value.lastIndexOf('\n', position),
+            downLine = textarea.value.lastIndexOf('\n', upLine - 1);
+        if (upLine === -1) return;
+        position = position - upLine;
+        textarea.selectionStart = textarea.selectionEnd = downLine + position;
+    }
+
+    moveDownCaret() {
+        let textarea = document.querySelector('textarea');
+        let position = textarea.selectionEnd,
+            upLine = textarea.value.lastIndexOf('\n', position),
+            downLine = textarea.value.indexOf('\n', position + 1);
+        if (downLine === -1) return;
+        position = position - upLine;
+        textarea.selectionStart = textarea.selectionEnd = downLine + position;
+    }
+
+    moveLeftCaret() {
+        let textarea = document.querySelector('textarea');
+        textarea.selectionEnd -= 1;
+        textarea.focus();
+    }
+
+    moveRightCaret() {
+        let textarea = document.querySelector('textarea');
+        textarea.selectionStart += 1;
+        textarea.focus();
+    }
     addListenersOnKeys() {
+
         document.addEventListener('keydown', (event) => this.keyDownHendler(event));
         document.addEventListener('keyup', (event) => this.keyUpHendler(event));
         document.addEventListener('mousedown', (e) => {
-            if (e.target.tagName !== "SPAN") {
+            if (e.target.tagName !== "SPAN" || !e.target.classList.contains('key')) {
                 return;
             } else {
+                this.TEXTAREA.focus();
                 let item = e.toElement;
                 item.classList.add('active');
                 let item_data = item.getAttribute('datacode');
-                if (item_data !== "ControlRight" && item_data !== "ControlLeft" && item_data !== 'AltRight' && item_data !== 'AltLeft' && item_data !== 'ShiftLeft' && item_data !== 'ShiftRight' && item_data !== 'MetaLeft' && item_data !== 'Tab' && item_data !== "CapsLock" && item_data !== 'Backspace' && item_data !== 'Delete' && item_data !== 'Enter' && item_data !== 'Space') {
-                    this.TEXTAREA.setRangeText(item.innerText);
-                    this.TEXTAREA.setSelectionRange(0,this.TEXTAREA.value.length)
-                } else {
-                    if (item_data === 'Enter') this.TEXTAREA.innerHTML += '\n';
-                    if (item_data === 'Backspace') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
-                    if (item_data === 'Space') this.TEXTAREA.value += ' ';
-                    if (item_data === 'Delete') this.TEXTAREA.innerHTML = this.TEXTAREA.innerHTML.slice(0, -1);
-                    if (item_data === 'Tab') this.TEXTAREA.innerHTML += '    ';
+                if (item_data !== "ControlRight" && item_data !== "ControlLeft" && item_data !== 'AltRight' && item_data !== 'AltLeft' && item_data !== 'ShiftLeft' && item_data !== 'ShiftRight' && item_data !== 'MetaLeft' && item_data !== 'Tab' && item_data !== "CapsLock" && item_data !== 'Backspace' && item_data !== 'Delete' && item_data !== 'Enter' && item_data !== 'Space' && item_data !== 'ArrowRight' && item_data !== 'ArrowLeft' && item_data !== 'ArrowUp' && item_data !== 'ArrowDown')
+                    this.setSelectionRange(item.innerText);
+                else {
+                    if (item_data === 'Enter') this.setSelectionRange('\n');
+                    if (item_data === 'Backspace') this.deleteSymbol();
+                    if (item_data === 'Space') this.setSelectionRange(' ');
+                    if (item_data === 'Delete') this.deleteSymbol();
+                    if (item_data === 'Tab') this.setSelectionRange('    ');
                     if (item_data == 'ShiftLeft' || item_data == 'ShiftRight') {
                         this.isShift = !this.isShift;
                         this.addKeysOnKeyboard();
-                        let shiftLeft = document.querySelector('span.key[datacode="ShiftLeft"]');
-                        let shifRight = document.querySelector('span.key[datacode="ShiftRight"]');
-                        if (this.isShift == true) {
-                            if (item_data === 'ShiftLeft') shiftLeft.classList.add('active-shift');
-                            else if (item_data === 'ShiftRight') shifRight.classList.add('active-shift');
-                        }
                     }
                     if (item_data == 'CapsLock') {
                         this.isCapsLock = !this.isCapsLock;
                         this.addKeysOnKeyboard();
                     }
+                    if (item_data == 'ArrowRight') this.moveRightCaret();
+                    if (item_data == 'ArrowLeft') this.moveLeftCaret();
+                    if (item_data == 'ArrowUp') {
+                        this.moveUpCaret();
+                        console.log('dd')
+                    }
+                    if (item_data == 'ArrowDown') this.moveDownCaret();
                 }
             }
         })
@@ -264,8 +274,6 @@ class Keyboard {
             } else CAPSLOCK.classList.remove('active-shift');
         })
     }
-
-
 }
 window.onload = () => {
     const keyboard = new Keyboard();
